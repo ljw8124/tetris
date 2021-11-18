@@ -60,7 +60,6 @@ function getRandomBlock() {
 startTetris()
 
 
-
 function startTetris() {
     const nextBlock = initState()
     const block = nextBlock
@@ -68,28 +67,35 @@ function startTetris() {
     block.y = initBlockCol
 
     const interval = setInterval(function(block) {
-        const copyBlock = block
-        /*console.log(copyBlock.y)
-        console.log(copyBlock.x)
-        console.log(matrix[copyBlock.y / blockSize][copyBlock.x / blockSize])*/
+        const copyBlock = copy(block)
+        console.log("copyBlock = " + copyBlock.shape)
+       // console.log(copyBlock.y)
+       // console.log(copyBlock.x)
+       // console.log(matrix[copyBlock.y / blockSize][copyBlock.x / blockSize])
+       // console.log(block.y / blockSize)
+       // console.log("------------")
 
         if(block.y / blockSize < 38) {
 
             //console.log("dropBlock activate.....")
             //console.log(block.y)
-            console.log(copyBlock)
-            move(block, 0, 10)
-            draw(block, ctx)
+            //console.log(copyBlock)
+            if(check(copyBlock)) {
+                move(block, 0, 10)
+                draw(block, ctx)
+
+            }
 
         } else{
 
             clearInterval(interval)
             stackBlock(block)
-            //startTetris()
-            checkValue(block)
+            check(block)
+
+            startTetris()
 
         }
-    }, 50, block)
+    }, 100, block)
 }
 
 function initState() {
@@ -97,6 +103,7 @@ function initState() {
 
     draw(block, ctx)
     moveByBtn(block, ctx)
+    reverseBlock(block)
 
     return block
 }
@@ -111,26 +118,85 @@ function makeMatrix() {
 }
 
 function checkValue(block) {
-    block.shape.forEach((col, y) => {
-        col.forEach((row, x) => {
+
+    console.log("마지막블럭 = " + block.shape[2])
+    console.log("첫번째 블럭 위치 = " + block.x)
+
+    for(let index = 0; index < block.shape.length; index++) {
+
+    }
+
+    for(let i = 0; i < block.shape.length; i++) {
+        let j = i * 10
+        console.log("x좌표 = " + (block.x + j))
+        console.log("y좌표 = " + (block.y + j))
+    }
+
+    const blockCol = block.shape[1]
+    const rx = block.x / 10
+
+    //밑에 값이 1이면 못 내려가게 필요
+
+    block.shape.forEach(value => {
+        console.log("각 배열 값 = " + value + ", 2번째 라인 값 = " + block.shape[1])
+
+    })
+
+    /*
+    //양옆 테두리 검사 + 옆에 값 1이면 못 움직이게 필요
+    if(block.x > 0 && blockCol.length + rx < 20) {
+        //console.log("true")
+        return true
+    } else{
+        //console.log("false")
+        return false
+    }
+    */
+
+}
+
+function check(block) {
+
+    let checked = true
+
+    block.shape.some((col, y) => {
+        col.some((row, x) => {
             const bx = x * 10
             const by = y * 10
 
             const rx = (block.x + bx) / 10
             const ry = (block.y + by) / 10
 
-            console.log("bx = " + x)
-            console.log("by = " + y)
-            console.log("matrix = " + matrix[y][x])
+            //console.log("x = " + (block.x + bx))
+            //console.log("y = " + (block.y + by))
 
-            console.log("block = " + block.shape[y][x])
-            console.log("진짜 위치 = " + rx + "," + ry)
-            console.log(matrix[y][x] + block.shape[y][x])
 
-            console.log("------")
+            if(matrix[ry][rx] > 0) {
+                console.log("stop")
+                checked = false
+                return true
+            }
 
+            /*
+            if(block.x + bx < 10) {
+                console.log("stop")
+                console.log(block.x + bx)
+                checked = false
+                return true
+            } else if(block.x + bx >= canvasRow - 10) {
+                console.log("stop")
+                checked = false
+                return true
+            }
+
+             */
         })
+        if(!checked) {
+            return true
+        }
     })
+
+    return checked
 }
 
 //배열에 넣기
@@ -154,7 +220,8 @@ function stackBlock(block) {
                 console.log(matrix[y][x] + block.shape[y][x])
 
                 console.log("------")
-*/
+                */
+
                 if(matrix[y][x] + block.shape[y][x] === 1) {
                     matrix[ry][rx] = 1
                 }
@@ -162,14 +229,11 @@ function stackBlock(block) {
             })
         })
 
-
-       // matrix[by][bx] = 1
-
 }
 
 function makeBlock() {
     const block = {
-        //초기위치 위해 설정
+        //초기위치설정
         x: 1,
         y: 1,
         shape: getRandomBlock()
@@ -177,7 +241,6 @@ function makeBlock() {
     return block
 }
 
-//이 단계에서 호출 전 쌓인블럭 복사 붙여넣기 필요
 function makeBackGround(block, ctx) {
 
     //console.log("makeBackGround activate......")
@@ -186,8 +249,11 @@ function makeBackGround(block, ctx) {
     for(let i = 0; i < row; i++) {
         for(let j = 0; j < col; j++) {
             if(matrix[j][i] !== 0) {
+                ctx.strokeStyle = "white"
                 ctx.fillStyle = "grey"
+                ctx.strokeRect(i * blockSize, j * blockSize, blockSize, blockSize)
                 ctx.fillRect(i * blockSize, j * blockSize, blockSize, blockSize)
+
             } else if(matrix[j][i] === 0){
                 ctx.fillStyle = "white"
                 ctx.fillRect(i * blockSize, j * blockSize, blockSize, blockSize)
@@ -196,15 +262,9 @@ function makeBackGround(block, ctx) {
     }
 }
 
-//배열 값에 따른 블럭 출력 과정 필요
 function draw(block, ctx) {
     makeBackGround(block, ctx)
     //console.log("draw activate.........")
-/*
-
-    ctx.strokeStyle = "black"
-    ctx.strokeRect(block.x, block.y, blockSize, blockSize)
-*/
 
     block.shape.forEach((col, y) => {
         col.forEach((row, x) => {
@@ -217,8 +277,15 @@ function draw(block, ctx) {
         })
     })
 
-
     //console.log(block)
+}
+
+function copy(block) {
+    let copyBlock = []
+    for(let i in block) {
+        copyBlock[i] = block[i]
+    }
+    return copyBlock
 }
 
 //실제 움직이는 메서드
@@ -230,6 +297,7 @@ function move(block, x, y) {
 //버튼이동 -> 쌓인 블럭과 충돌방지 필요
 function moveByBtn(block, ctx) {
     document.querySelector(".leftBtn").addEventListener("click", evt => {
+
         if(block.x > 0) {
             //console.log("left move activate....")
             move(block, -10, 0)
@@ -238,7 +306,11 @@ function moveByBtn(block, ctx) {
     })
 
     document.querySelector(".rightBtn").addEventListener("click", evt => {
-        if(block.x / blockSize < 19) {
+
+        const blockCol = block.shape[1]
+        const rx = block.x / 10
+
+        if(blockCol.length + rx < 20) {
             //console.log("right move activate.....")
             move(block, 10, 0)
             draw(block, ctx)
@@ -249,8 +321,19 @@ function moveByBtn(block, ctx) {
 
 function reverseBlock(block) {
     document.querySelector(".rotateBtn").addEventListener("click", evt => {
-        block.shape.forEach((row, y) => {
-            
+        block.shape.forEach((row, x) => {
+            //console.log(row)
+            for(let y = 0; y < x; y++) {
+                const copyBlock = block.shape[y][x]
+                block.shape[y][x] = block.shape[x][y]
+                block.shape[x][y] = copyBlock
+                /*console.log(copyBlock)
+                console.log("-----------------")
+                console.log(block)*/
+            }
+        })
+        block.shape.forEach(row => {
+            row.reverse()
         })
     })
 }
