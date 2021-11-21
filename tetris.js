@@ -7,7 +7,6 @@ const col = 40
 const blockSize = 10
 let score = 0
 
-
 const canvasRow = row * blockSize
 const canvasCol = col * blockSize
 
@@ -60,8 +59,8 @@ function getRandomBlock() {
 
 let nextBlock = makeBlock()
 
-startTetris()
 
+startTetris()
 
 
 function startTetris() {
@@ -105,6 +104,9 @@ function startTetris() {
             startTetris()
         }
     }, 100  , block)
+
+
+    dropToFloor(block, interval)
 }
 
 function makeMatrix() {
@@ -404,6 +406,26 @@ function changeByBtn(block, ctx) {
 
 }
 
+function dropToFloor(block, interval) {
+    document.querySelector(".descentBtn").addEventListener("click", evt =>{
+        const copyBlock = copy(block)
+
+        if(block.y / blockSize < 38) {
+
+            while(true) {
+                move(copyBlock, 0, blockSize);
+                if(check(copyBlock)) {
+                    move(block, 0, blockSize)
+                } else{
+                    break;
+                }
+            }
+            clearInterval(interval)
+            stackBlock(block)
+            startTetris()
+        }
+    })
+}
 
 function reverseBlock(block) {
 
