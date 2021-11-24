@@ -1,3 +1,4 @@
+/*
 
 const canvas = document.querySelector(".tetrisCanvas")
 const ctx = canvas.getContext("2d")
@@ -163,7 +164,7 @@ function stackBlock(block) {
 
                 const rx = (block.x + bx) / 10
                 const ry = (block.y + by) / 10
-                /*
+                /!*
                 console.log("bx = " + x)
                 console.log("by = " + y)
                 console.log("matrix = " + matrix[y][x])
@@ -171,7 +172,7 @@ function stackBlock(block) {
                 console.log("진짜 위치 = " + rx + "," + ry)
                 console.log(matrix[y][x] + block.shape[y][x])
                 console.log("------")
-                */
+                *!/
 
                 if(matrix[y][x] + block.shape[y][x] > 0) {
                     matrix[ry][rx] = block.shape[y][x]
@@ -360,11 +361,11 @@ function draw(block, nextBlock, ctx) {
 }
 
 function copy(block) {
-    /*let copyBlock = []
+    /!*let copyBlock = []
     for(let i in block) {
         copyBlock[i] = block[i]
     }
-    return copyBlock*/
+    return copyBlock*!/
     let copyBlock = JSON.parse(JSON.stringify(block))
 
     return copyBlock
@@ -436,9 +437,9 @@ function reverseBlock(block) {
                 const copyBlock = block.shape[y][x]
                 block.shape[y][x] = block.shape[x][y]
                 block.shape[x][y] = copyBlock
-                /*console.log(copyBlock)
+                /!*console.log(copyBlock)
                 console.log("-----------------")
-                console.log(block)*/
+                console.log(block)*!/
             }
         })
 
@@ -457,3 +458,4 @@ function crashBlock(matrix) {
 }
 
 
+*/
